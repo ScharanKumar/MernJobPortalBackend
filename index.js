@@ -15,8 +15,10 @@ app.use(cors())
 app.use(express.json({ limit: '32mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: true }));
 
+const MONGODB_URI="mongodb+srv://9848charan:Charan%40123@cluster0.yq8er.mongodb.net/JobSearch?retryWrites=true&w=majority"
+
 mongoose
-    .connect(process.env.MONGODB_URI)
+    .connect(MONGODB_URI)
     .then(() => {
         
 
