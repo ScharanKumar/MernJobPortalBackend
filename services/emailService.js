@@ -7,13 +7,13 @@ const sendEmail = async (to, subject, text) => {
       port: 465,
       secure: true, // true for 465, false for other ports
       auth: {
-        user: process.env.EMAIL_USER, // use environment variables
-        pass: process.env.EMAIL_PASS,
+        user: "websiteofcharan@gmail.com", // use environment variables
+        pass: "cplqsanjcqiepbhs",
       },
     });
 
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER, // sender address
+      from: "websiteofcharan@gmail.com", // sender address
       to, // recipient address
       subject, // Subject line
       text, // plain text body

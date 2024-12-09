@@ -4,7 +4,7 @@ const User = require('../models/User');
 const dotenv = require('dotenv');
 
 dotenv.config();
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = "Charan@12345"
 
 const authUserMiddleware = async (req, res, next) => {
   const token = req.headers.authorization && req.headers.authorization.split(' ')[1];

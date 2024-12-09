@@ -11,7 +11,7 @@ const { sendEmail } = require("../services/emailService");
 // Secret key for JWT
 dotenv.config();
 
-const JWT_SECRET = process.env.JWT_SECRET;
+
 
 // create admin user
 
@@ -66,7 +66,7 @@ exports.login = async (req, res) => {
                 .json({ message: "Invalid username or password" });
         }
 
-        const token = jwt.sign({ id: admin._id }, JWT_SECRET, {
+        const token = jwt.sign({ id: admin._id }, "Charan@12345", {
             expiresIn: "1h",
         });
 
