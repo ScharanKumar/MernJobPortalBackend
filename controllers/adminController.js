@@ -121,7 +121,9 @@ exports.createJob = async (req, res) => {
 
     let imageUrl = "";
         if (imageFile) {
-            const result = await cloudinary.uploader.upload(imageFile.path);
+            const result = await cloudinary.uploader.upload(imageFile.path,{
+              resource_type: "raw",  // This is important for PDF or non-image files
+          });
             // console.log("Cloudinary Upload Response:", result);
             imageUrl = result.secure_url;
         }
