@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 const Job = require("../models/Job");
 const JobApplication = require("../models/JobApplication")
 const { sendEmail } = require("../services/emailService");
+const cloudinary = require("../middleware/cloudinary");
 
 
 // Secret key for JWT
@@ -112,6 +113,21 @@ exports.createJob = async (req, res) => {
     const formattedLocation = JSON.parse(location);
     const formattedSkill = JSON.parse(skill);
 
+    const imageFile = req.file;
+
+    // console.log("Uploaded File:", req.file);
+
+    // console.log("Uploading File Path:", req.file.path);
+
+    let imageUrl = "";
+        if (imageFile) {
+            const result = await cloudinary.uploader.upload(imageFile.path);
+            // console.log("Cloudinary Upload Response:", result);
+            imageUrl = result.secure_url;
+        }
+
+        // console.log("Cloudinary Upload Response:", result);
+
     const newJob = new Job({
         companyName,
         jobRole,
@@ -123,7 +139,7 @@ exports.createJob = async (req, res) => {
         eligibilityCriteria,
         aboutCompany,
         importantNotes,
-        companyImage: `${req.file.path}`, // Save file path
+        companyImage: `${imageUrl}`, // Save file path
     });
 
     try {

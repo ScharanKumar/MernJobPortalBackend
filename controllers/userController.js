@@ -6,7 +6,7 @@ const User = require("../models/User");
 const dotenv = require("dotenv");
 const Job = require("../models/Job")
 const { sendEmail } = require("../services/emailService");
-
+const cloudinary = require("../middleware/cloudinary");
 
 
 // Secret key for JWT
@@ -308,12 +308,20 @@ exports.getAllOpenToApplyJobsOfUser = async (req, res) => {
         return res.status(400).json({ message: "Resume is required" });
     }
 
+    const imageFile = req.file;
+
+    let imageUrl = "";
+        if (imageFile) {
+            const result = await cloudinary.uploader.upload(imageFile.path);
+            imageUrl = result.secure_url;
+        }
+
     const newJobApplication = new JobApplication({
         userName,
         userId,
         jobId,
         email,
-        resume: `${req.file.path}`
+        resume: `${imageUrl}`
     });
 
     try {
