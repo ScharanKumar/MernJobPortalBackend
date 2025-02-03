@@ -7,6 +7,7 @@ const Job = require("../models/Job");
 const JobApplication = require("../models/JobApplication")
 const { sendEmail } = require("../services/emailService");
 const cloudinary = require("../middleware/cloudinary");
+const fs = require("fs");
 
 
 // Secret key for JWT
@@ -119,14 +120,24 @@ exports.createJob = async (req, res) => {
 
     // console.log("Uploading File Path:", req.file.path);
 
-    let imageUrl = "";
-        if (imageFile) {
-            const result = await cloudinary.uploader.upload(imageFile.path,{
-              resource_type: "raw",  // This is important for PDF or non-image files
-          });
-            // console.log("Cloudinary Upload Response:", result);
-            imageUrl = result.secure_url;
-        }
+        let imageUrl = "";
+                if (imageFile) {
+                    const result = await cloudinary.uploader.upload(imageFile.path);
+                    imageUrl = result.secure_url;
+                }
+
+      //   const result = await cloudinary.uploader.upload(imageFile.path, {
+      //     resource_type: "auto", // Use "raw" for PDFs & non-image files
+      //     folder: "jobs", // Store under "jobs" folder in Cloudinary
+      // });
+
+      // console.log("UU ",result.secure_url);
+
+      // imageUrl = result.secure_url.replace("/upload/", "/upload/fl_attachment/"); // Get the file URL
+      // console.log("IMURL ", imageUrl);
+
+      // Remove the local file after upload
+      fs.unlinkSync(req.file.path);
 
         // console.log("Cloudinary Upload Response:", result);
 
@@ -141,7 +152,7 @@ exports.createJob = async (req, res) => {
         eligibilityCriteria,
         aboutCompany,
         importantNotes,
-        companyImage: `${imageUrl}`, // Save file path
+        companyImage: imageUrl, // Save file path
     });
 
     try {

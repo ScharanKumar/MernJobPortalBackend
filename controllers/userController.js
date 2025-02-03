@@ -7,6 +7,7 @@ const dotenv = require("dotenv");
 const Job = require("../models/Job")
 const { sendEmail } = require("../services/emailService");
 const cloudinary = require("../middleware/cloudinary");
+const fs = require("fs");
 
 
 // Secret key for JWT
@@ -308,20 +309,47 @@ exports.getAllOpenToApplyJobsOfUser = async (req, res) => {
         return res.status(400).json({ message: "Resume is required" });
     }
 
-    const imageFile = req.file;
+    // const imageFile = req.file;
 
-    let imageUrl = "";
-        if (imageFile) {
-            const result = await cloudinary.uploader.upload(imageFile.path);
-            imageUrl = result.secure_url;
-        }
+    // const result = await cloudinary.uploader.upload(imageFile.path, {
+    //           resource_type: "auto", // Use "raw" for PDFs & non-image files
+    //           folder: "jobs", // Store under "jobs" folder in Cloudinary
+    //       });
+    
+    //       console.log("UU ",result.secure_url);
+    
+    //       imageUrl = result.secure_url.replace("/upload/", "/upload/fl_attachment/"); // Get the file URL
+    //       console.log("IMURL ", imageUrl);
+    
+    //       // Remove the local file after upload
+    //       fs.unlinkSync(req.file.path);
+
+    const filePath = req.file.path; 
+
+    const result = await cloudinary.uploader.upload(filePath, {
+      resource_type: "raw", // Ensure raw format for PDFs
+      folder: "jobs", // Upload to "jobs" folder
+      use_filename: true,
+      unique_filename: false,
+      content_disposition: "inline" // Allow browser viewing
+  });
+
+  console.log("Cloudinary Response:", result);
+
+  // Modify URL to open in browser instead of downloading
+  const fileUrl = result.secure_url;
+
+  console.log("Final Resume URL:", fileUrl);
+
+  // Remove local file after upload
+  fs.unlinkSync(filePath);
 
     const newJobApplication = new JobApplication({
         userName,
         userId,
         jobId,
         email,
-        resume: `${imageUrl}`
+        resume: fileUrl
     });
 
     try {
